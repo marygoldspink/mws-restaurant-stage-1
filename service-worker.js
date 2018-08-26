@@ -1,4 +1,6 @@
 const cacheName = 'RestaurantReviews';
+
+// The list of files to cache including our restaurant images.
 const filesToCache = [
     '/',
     '/index.html',
@@ -19,18 +21,26 @@ const filesToCache = [
     '/img/9.jpg',
     '/img/10.jpg'
 ];
+
+// add the event listener to handle the install event
 self.addEventListener('install', e => {
     console.log('[ServiceWorker] Install');
     e.waitUntil(
+        // open the cache and add all our files to it
         caches.open(cacheName).then(cache => {
             console.log('[ServiceWorker] Caching app shell');
             return cache.addAll(filesToCache);
         })
     );
 });
+
+// handle the service worker activate event
 self.addEventListener('activate',  event => {
     event.waitUntil(self.clients.claim());
 });
+
+// handle the fetch event and return 
+// either from the cache or request from server
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request, {ignoreSearch:true}).then(response => {
